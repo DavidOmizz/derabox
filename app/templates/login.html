@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: #FFF3E0;
+            max-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            box-shadow: 1px 1px 4px black;
+            width: 70%;
+            margin: 0 auto;
+            padding: 20px;
+            margin-top: 25vh;
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <div>
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        <div>
+            desing
+        </div>
+    </div>
+</body>
+</html>

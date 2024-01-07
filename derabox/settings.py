@@ -122,6 +122,10 @@ STATICFILES_DIRS = [
     STATIC_DIR
 ]
 
+# app/settings.py
+AUTH_USER_MODEL = 'app.User'
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

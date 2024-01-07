@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>This is test page</h1>
+    {% if user.user_type == 'customer' %}
+        <p>You are a customer</p>
+        <p>Welcome to our page</p>
+    {% elif user.user_type == 'delivery' %}
+        <p>You are delivery</p>
+    {% else %}
+        <p>You are an admin</p>
+    {% endif %}
+</body>
+</html>
