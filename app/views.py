@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, CustomerProfile, DeliveryPersonProfile
 from .forms import RegUserForm, LoginForm
+from django.contrib.auth import authenticate, login, logout
+
 
 # Create your views here.
 
@@ -56,3 +58,21 @@ def login(request):
         form = LoginForm()
 
     return render(request, 'dashboard/signin.html', {'form': form})
+
+
+def loginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        # else:
+        #     messages.warning(request, 'Username Or password is incorrect')
+    
+    context = {}      
+    # return render(request, 'dashboard/signin.html', context)
+    return render(request, 'dashboard/signin.html')
