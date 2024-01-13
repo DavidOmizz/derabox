@@ -46,12 +46,19 @@
         <!-- Sidebar Start -->
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-light navbar-light">
-                <a href="index.html" class="navbar-brand mx-4 mb-3">
-                    <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>DASHMIN</h3>
+                <a href="{% url 'dashboard' %}" class="navbar-brand mx-4 mb-3">
+                    <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>DERABOX</h3>
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
                     <div class="position-relative">
-                        <img class="rounded-circle" src="{% static 'dashboard/img/user.jpg'%}" alt="" style="width: 40px; height: 40px;">
+                        <!-- <img class="rounded-circle" src="{% static 'dashboard/img/user.jpg'%}" alt="" style="width: 40px; height: 40px;"> -->
+                        {% if user_type == 'delivery' %}
+                        <img class="rounded-circle" src="{{ request.user.deliveryprofile.profile_picture.url }}" alt="" style="width: 40px; height: 40px;">
+                        {% elif user_type == 'customer' %}
+                        <img class="rounded-circle" src="{{ request.user.customersprofile.profile_picture.url }}" alt="" style="width: 40px; height: 40px;">
+                        {% else %}
+                            <img class="rounded-circle" src="{% static 'dashboard/img/user.jpg'%}" alt="" style="width: 40px; height: 40px;">
+                        {% endif %}
                         <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
                     </div>
                     <div class="ms-3">
@@ -60,17 +67,25 @@
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="index.html" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                    {% if request.user.user_type == 'admin' %}
+                    <a href="{% url 'dashboard' %}" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <!-- {% if request.user.user_type == 'admin' %} -->
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Orders</a>
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Order</a>
+                            <div class="dropdown-menu bg-transparent border-0">
+                                <a href="{% url 'creation-order' %}" class="dropdown-item">Create Order</a>
+                                <a href="{% url 'order-items' %}" class="dropdown-item">Order Items</a>
+                                <a href="{% url 'order-history' %}" class="dropdown-item">Order Historys</a>
+                            </div>
+                        </div>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Users Creation</a>
                             <div class="dropdown-menu bg-transparent border-0">
                                 <a href="button.html" class="dropdown-item">Buttons</a>
                                 <a href="typography.html" class="dropdown-item">Typography</a>
                                 <a href="element.html" class="dropdown-item">Other Elements</a>
                             </div>
                         </div>
-                    {% else %}
+                    <!-- {% else %} -->
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>My check</a>
                             <div class="dropdown-menu bg-transparent border-0">
@@ -79,7 +94,7 @@
                                 <a href="element.html" class="dropdown-item">Other Elements</a>
                             </div>
                         </div>
-                    {% endif %}
+                    <!-- {% endif %} -->
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Elements</a>
                         <div class="dropdown-menu bg-transparent border-0">
@@ -186,7 +201,13 @@
                     </div>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img class="rounded-circle me-lg-2" src="{% static 'dashboard/img/user.jpg' %}" alt="" style="width: 40px; height: 40px;">
+                            {% if user_type == 'delivery' %}
+                                <img class="rounded-circle me-lg-2" src="{{ request.user.deliveryprofile.profile_picture.url }}" alt="" style="width: 40px; height: 40px;">
+                            {% elif user_type == 'customer' %}
+                                <img class="rounded-circle me-lg-2" src="{{ request.user.customerprofile.profile_picture.url }}" alt="" style="width: 40px; height: 40px;">
+                            {% else %}
+                                <img class="rounded-circle" src="{% static 'dashboard/img/user.jpg'%}" alt="" style="width: 40px; height: 40px;">
+                            {% endif %}
                             <span class="d-none d-lg-inline-flex">{{ request.user.username }}</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
@@ -245,7 +266,7 @@
 
 
             <!-- Sales Chart Start -->
-            <div class="container-fluid pt-4 px-4">
+            <!-- <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-light text-center rounded p-4">
@@ -266,7 +287,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <!-- Sales Chart End -->
 
 
@@ -345,7 +366,7 @@
 
 
             <!-- Widgets Start -->
-            <div class="container-fluid pt-4 px-4">
+            <!-- <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
                     <div class="col-sm-12 col-md-6 col-xl-4">
                         <div class="h-100 bg-light rounded p-4">
@@ -462,8 +483,60 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <!-- Widgets End -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="row g-4">
+                    <div class="col-sm-12 col-xl-12">
+                        <div class="bg-light rounded h-100 p-4">
+                            <h6 class="mb-4">Hoverable Table</h6>
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">First Name</th>
+                                        <th scope="col">Last Name</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>John</td>
+                                        <td>Doe</td>
+                                        <td>jhon@email.com</td>
+                                        <td>
+                                            <a class="btn btn-sm btn-success" href=""><i class="bi bi-eye"></i> View</a>
+                                            <a class="btn btn-sm btn-primary" href=""><i class="bi bi-pen"></i> Edit</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">2</th>
+                                        <td>Mark</td>
+                                        <td>Otto</td>
+                                        <td>mark@email.com</td>
+                                        <td>
+                                            <a class="btn btn-sm btn-success" href=""><i class="bi bi-eye"></i> View</a>
+                                            <a class="btn btn-sm btn-primary" href=""><i class="bi bi-pen"></i> Edit</a>
+                                        </td>                                   
+                                     </tr>
+                                    <tr>
+                                        <th scope="row">3</th>
+                                        <td>Jacob</td>
+                                        <td>Thornton</td>
+                                        <td>jacob@email.com</td>
+                                        <td>
+                                            <a class="btn btn-sm btn-success" href=""><i class="bi bi-eye"></i> View</a>
+                                            <a class="btn btn-sm btn-primary" href=""><i class="bi bi-pen"></i> Edit</a>
+                                        </td>                                    
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
             <!-- Footer Start -->
