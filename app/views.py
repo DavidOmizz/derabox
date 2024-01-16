@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, CustomerProfile, DeliveryPersonProfile
-from .forms import RegUserForm, LoginForm
+from .forms import RegUserForm, LoginForm, CreateOrderForm
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+
 
 
 # Create your views here.
@@ -16,19 +19,25 @@ def home(request):
 
 def test(request):
     return render(request, 'test.html')
-
+@login_required
 def orderForm(request):
+    if request.method == 'POST':
+        order_form = CreateOrderForm(request.POST)
+        if order_form.is_valid():
+            order_form.save()
+            # user = order_form.cleaned_data.get('username','email')
     return render(request, 'dashboard/create-order-form.html')
-
+@login_required
 def orderItems(request):
     return render(request, 'dashboard/order-items-form.html')
-
+@login_required
 def orderHistory(request):
     return render(request, 'dashboard/order-history-form.html')
 
 # def dashboard(request):
 #     return render(request, 'dashboard/index.html')
 
+@login_required
 def dashboard(request):
     customersProfile = CustomerProfile.objects.all()
     deliveryProfile = DeliveryPersonProfile.objects.all()
@@ -85,7 +94,10 @@ def login(request):
 
     return render(request, 'dashboard/signin.html', {'form': form})
 
-
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('login')
 # def loginPage(request):
 #     if request.method == 'POST':
 #         username = request.POST.get('username')

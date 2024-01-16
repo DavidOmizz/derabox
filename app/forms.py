@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import User
+from .models import User, Order
 
 
 # class RegUserForm(UserCreationForm):
@@ -51,4 +51,10 @@ class LoginForm(AuthenticationForm):
         label='Password',
         widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'form-control'})
     )
+    
+
+class CreateOrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = '__all__'
     
