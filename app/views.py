@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, CustomerProfile, DeliveryPersonProfile
+from .models import User, CustomerProfile, DeliveryPersonProfile, Order, OrderHistory
 from .forms import RegUserForm, LoginForm, CreateOrderForm
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -9,6 +9,9 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+
+from django.views.generic import TemplateView, ListView,DetailView, CreateView, UpdateView, DeleteView
+
 
 
 
@@ -19,20 +22,38 @@ def home(request):
 
 def test(request):
     return render(request, 'test.html')
+
 @login_required
 def orderForm(request):
+    order_form = CreateOrderForm()
     if request.method == 'POST':
-        order_form = CreateOrderForm(request.POST)
-        if order_form.is_valid():
-            order_form.save()
+        form = CreateOrderForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('creation-order')
+        else:
+            print('This is not a valid order')
+    else:
+        print('An error occurred while creating order')
+        form = CreateOrderForm()
             # user = order_form.cleaned_data.get('username','email')
-    return render(request, 'dashboard/create-order-form.html')
+    return render(request, 'dashboard/create-order-form.html', {'orderForm': order_form})
+
+# class AddPost(SuccessMessageMixin, CreateView):
+#     model = 
+#     template_name = 'cbv_form.html'
+#     form_class = FormDetails
+#     success_url = reverse_lazy('app:add_post')
+#     success_message = 'Updated successfully'
+
 @login_required
 def orderItems(request):
     return render(request, 'dashboard/order-items-form.html')
 @login_required
 def orderHistory(request):
-    return render(request, 'dashboard/order-history-form.html')
+    orders = OrderHistory.objects.all()
+    context = {'orders': orders}
+    return render(request, 'dashboard/order-history-form.html', context)
 
 # def dashboard(request):
 #     return render(request, 'dashboard/index.html')

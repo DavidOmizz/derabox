@@ -11,7 +11,7 @@ urlpatterns = [
     # path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     # path('logout', auth_views.LogoutView.as_view(template_name= 'dashboard/logout.html'), name = 'logout'),
     path('dashboard', dashboard, name = 'dashboard'),
-    path('creation-order', orderForm, name = 'creation-order'),
+    # path('creation-order', orderForm, name = 'creation-order'),
     path('creation-order', orderForm, name = 'creation-order'),
     path('order-items', orderItems, name = 'order-items'),
     path('order-history', orderHistory, name = 'order-history'),
