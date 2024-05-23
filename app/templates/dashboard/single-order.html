@@ -1,0 +1,48 @@
+{% extends 'dashboard/base.html' %} 
+{% load static %}
+
+{% block body %}
+
+    <!-- Form Start -->
+    <!-- <div class="container-fluid pt-4 px-4"> -->
+
+         <!-- Table Start -->
+         <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-sm-12 col-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h6 class="mb-4">Order History</h6>
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Order</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Timestamp</th>
+                                    <th scope="col">Tracking Number</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if order_detail %}
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>{{ order_detail.product_name }}</td>
+                                    <td>{{ order_detail.status }}</td>
+                                    <td>{{ order_detail.created_at }}</td>
+                                    <td>{{ order_detail.tracking_number }}</td>
+                                    <!-- <td><i class="bi bi-pencil-square"></i></td> -->
+                                    <td>
+                                        <!-- <a class="btn btn-sm btn-success" href=""><i class="bi bi-eye"></i> View</a> -->
+                                        <a class="btn btn-sm btn-primary" href="{% url 'update-order' order_detail.id %}"><i class="bi bi-pen"></i> Edit</a>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Table End -->
+        {% endblock %}

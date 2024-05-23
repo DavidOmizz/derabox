@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import User, Order
+from .models import User, Order, OrderItem, OrderHistory
 
 
 # class RegUserForm(UserCreationForm):
@@ -72,7 +72,10 @@ class CreateOrderForm(forms.ModelForm):
         label='Select user to create order',
         widget=forms.Select(attrs={'placeholder': 'Select', 'class': 'form-control'})
     )
+    
+    product_name = forms.CharField(required=True, label='Product Name', widget=forms.TextInput(attrs={'placeholder': 'Enter product name', 'class': 'form-control'}))
 
+    
     status = forms.ChoiceField(
         required=True,
         label='Order Status',
@@ -82,7 +85,24 @@ class CreateOrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = ('user', 'status')
+        fields = ('user', 'product_name','status')
+        
+class CreateOrderItemForm(forms.ModelForm):
+    class Meta:
+        model = OrderItem
+        fields = '__all__'
+        
+class OrderHistoryForm(forms.ModelForm):
+    class Meta:
+        model = OrderHistory
+        fields = '__all__'
+
+class UpdateOrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['user', 'product_name', 'status']  # Include the fields you want to update
+
+        
 # class CreateOrderForm(forms.ModelForm):
 #     class Meta:
 #         model = Order

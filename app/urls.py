@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home, register, test, login, dashboard, orderForm, orderItems, orderHistory, logout_view
+from .views import home, register, test, login, dashboard, orderForm, orderItems, orderHistory, logout_view, UpdateOrder, SingleOrder, MyOrderHistory
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -15,4 +15,7 @@ urlpatterns = [
     path('creation-order', orderForm, name = 'creation-order'),
     path('order-items', orderItems, name = 'order-items'),
     path('order-history', orderHistory, name = 'order-history'),
+    # path('order-history', MyOrderHistory.as_view(), name='order-history'),
+    path('update-order/<int:pk>', UpdateOrder.as_view(),name='update-order'),
+    path('order-detail/<int:pk>', SingleOrder.as_view(),name='order-detail'),
 ]

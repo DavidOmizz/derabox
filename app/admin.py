@@ -13,11 +13,12 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('user', 'tracking_number', 'status')
+    list_display = ('product_name', 'tracking_number', 'status')
     
 @admin.register(OrderItem)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order', 'product_name', 'quantity', 'price')
+    # list_display = ('order', 'product_name', 'quantity', 'price')
+    list_display = ('order', 'quantity', 'price')
     
 @admin.register(OrderHistory)
 class OrderAdmin(admin.ModelAdmin):

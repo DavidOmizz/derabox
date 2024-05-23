@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 
 # Create your models here.
 from django.db import models
@@ -48,38 +48,70 @@ class DeliveryPersonProfile(models.Model):
 
 
 
+# class Order(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     tracking_number = models.CharField(max_length=15, unique=True, editable=False)
+#     status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Shipped', 'Shipped'), ('Delivered', 'Delivered')], default = 'Pending')
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     product_name = models.CharField(max_length=255, blank = True, null = True)
+
+#     # previous_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Shipped', 'Shipped'), ('Delivered', 'Delivered')], null=True, blank=True) This wa for privious signals.
+
+#     def save(self, *args, **kwargs):
+#         if not self.tracking_number:
+#             # Generate the tracking number when saving for the first time
+#             current_year = timezone.now().year
+#             last_order = Order.objects.filter(tracking_number__startswith=f'TK{current_year}').order_by('-tracking_number').first()
+
+#             if last_order:
+#                 last_tracking_number = int(last_order.tracking_number[10:])
+#                 new_tracking_number = f'TK{current_year}{str(last_tracking_number + 1).zfill(5)}'
+#             else:
+#                 new_tracking_number = f'TK{current_year}00001'
+
+#             self.tracking_number = new_tracking_number
+
+#         super().save(*args, **kwargs)
+        
+#         # if self.pk is not None:
+#         #     original = Order.objects.get(pk=self.pk)
+#         #     if original.status != self.status:
+#         #         self.previous_status = original.status
+#         # super(Order, self).save(*args, **kwargs)
+        
+#     def __str__(self) -> str:
+#         # return self.user.username
+#         return self.product_name
+
+
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     tracking_number = models.CharField(max_length=15, unique=True, editable=False)
-    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Shipped', 'Shipped'), ('Delivered', 'Delivered')], default = 'Pending')
+    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Shipped', 'Shipped'), ('Delivered', 'Delivered')], default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # previous_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Shipped', 'Shipped'), ('Delivered', 'Delivered')], null=True, blank=True) This wa for privious signals.
+    product_name = models.CharField(max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.tracking_number:
             # Generate the tracking number when saving for the first time
             current_year = timezone.now().year
-            last_order = Order.objects.filter(tracking_number__startswith=f'TK{current_year}').order_by('-tracking_number').first()
+            with transaction.atomic():
+                last_order = Order.objects.filter(tracking_number__startswith=f'TK{current_year}').order_by('-tracking_number').select_for_update().first()
 
-            if last_order:
-                last_tracking_number = int(last_order.tracking_number[10:])
-                new_tracking_number = f'TK{current_year}{str(last_tracking_number + 1).zfill(5)}'
-            else:
-                new_tracking_number = f'TK{current_year}00001'
+                if last_order:
+                    last_tracking_number = int(last_order.tracking_number[8:])  # Correct index for the numeric part
+                    new_tracking_number = f'TK{current_year}{str(last_tracking_number + 1).zfill(5)}'
+                else:
+                    new_tracking_number = f'TK{current_year}00001'
 
-            self.tracking_number = new_tracking_number
+                self.tracking_number = new_tracking_number
 
         super().save(*args, **kwargs)
-        
-        # if self.pk is not None:
-        #     original = Order.objects.get(pk=self.pk)
-        #     if original.status != self.status:
-        #         self.previous_status = original.status
-        # super(Order, self).save(*args, **kwargs)
-        
+
     def __str__(self) -> str:
-        return self.user.username
+        return self.product_name if self.product_name else str(self.pk)
 
 
 # class Order(models.Model):
@@ -96,12 +128,12 @@ class Order(models.Model):
     
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
-    product_name = models.CharField(max_length=255)
+    # product_name = models.CharField(max_length=255)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __str__(self) -> str:
-        return self.product_name
+        return self.order.product_name
     
 class OrderHistory(models.Model):
     order = models.ForeignKey(Order, related_name='history', on_delete=models.CASCADE)
@@ -111,7 +143,9 @@ class OrderHistory(models.Model):
     notes = models.TextField(blank=True, null=True)
     
     def __str__(self) -> str:
-        return self.order.user.username
+        # return self.order.user.username
+        return self.order.product_name
+    # return f"OrderHistory for {self.order.tracking_number}"
 
 
 
@@ -152,17 +186,33 @@ class OrderHistory(models.Model):
 #     if created:
 #         OrderHistory.objects.create(order=instance, status=instance.status)
 
+# @receiver(post_save, sender=Order)
+# def update_order_history(sender, instance, **kwargs):
+#     try:
+#         # Try to get the corresponding OrderHistory
+#         order_history = OrderHistory.objects.get(order=instance)
+#         # Update the status
+#         order_history.status = instance.status
+#         order_history.tracking_number = instance.tracking_number
+#         order_history.save()
+#     except OrderHistory.DoesNotExist:
+#         # If no OrderHistory exists, create one
+#         OrderHistory.objects.create(order=instance, status=instance.status, tracking_number=instance.tracking_number)
+
 @receiver(post_save, sender=Order)
-def update_order_history(sender, instance, **kwargs):
-    try:
-        # Try to get the corresponding OrderHistory
-        order_history = OrderHistory.objects.get(order=instance)
-        # Update the status
-        order_history.status = instance.status
-        order_history.tracking_number = instance.tracking_number
-        order_history.save()
-    except OrderHistory.DoesNotExist:
-        # If no OrderHistory exists, create one
+def update_order_history(sender, instance, created, **kwargs):
+    if created:
+        # Create a new OrderHistory entry when an Order is created
         OrderHistory.objects.create(order=instance, status=instance.status, tracking_number=instance.tracking_number)
+    else:
+        # Update the existing OrderHistory entry when an Order is updated
+        try:
+            order_history = OrderHistory.objects.get(order=instance)
+            order_history.status = instance.status
+            order_history.tracking_number = instance.tracking_number
+            order_history.save()
+        except OrderHistory.DoesNotExist:
+            # If OrderHistory does not exist, create one (safety net)
+            OrderHistory.objects.create(order=instance, status=instance.status, tracking_number=instance.tracking_number)
         
         

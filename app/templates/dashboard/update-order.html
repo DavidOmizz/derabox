@@ -9,7 +9,7 @@
                 <div class="row g-4 justify-content-center">
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-light rounded h-100 p-4">
-                            <h6 class="mb-4">Order Items</h6>
+                            <h6 class="mb-4">Update Order</h6>
                             <!-- <div class="form-floating mb-3">
                                 <select class="form-select" id="floatingSelect"
                                     aria-label="Floating label select example">
@@ -22,10 +22,15 @@
                                 <label for="floatingSelect">Select the order(User name)</label>
                             </div> -->
                             <form action="" method="post">
-                                {{ orderItems }}
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-success mt-4" >Create Order</button>
+                                {{ form }}
+                                {% for item in order_items %}
+                                    Order Item: {{ item.product_name }} (Quantity: {{ item.quantity }}, Price: {{ item.price }})
+                                    <!-- Add form fields for editing order item details if needed -->
+                                {% endfor %}
+                                <button type="submit" class="btn btn-sm btn-success mt-4" >Update Order</button>
                             </form>
+
                         </div>
                     </div>
                     <!-- <div class="col-sm-12 col-xl-6">

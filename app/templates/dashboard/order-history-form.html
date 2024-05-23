@@ -4,8 +4,54 @@
 {% block body %}
 
     <!-- Form Start -->
-    <div class="container-fluid pt-4 px-4">
-        <div class="row g-4">
+    <!-- <div class="container-fluid pt-4 px-4"> -->
+
+         <!-- Table Start -->
+         <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-sm-12 col-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h6 class="mb-4">Order History</h6>
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Order</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Timestamp</th>
+                                    <th scope="col">Amount/Quantity</th>
+                                    <th scope="col">Tracking Number</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                {% for item in order.items.all %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td>{{ order.product_name }}</td>
+                                        <td>{{ order.status }}</td>
+                                        <td>{{ order.created_at }}</td>
+                                        <td>{{ item.price }} ({{ item.quantity }})</td>
+                                        <td>{{ order.tracking_number }}</td>
+                                        <td>{{ order.id }}</td>
+                                        <!-- <td><i class="bi bi-pencil-square"></i></td> -->
+                                        <td>
+                                            <a class="btn btn-sm btn-success" href="{% url 'order-detail' order.id %}"><i class="bi bi-eye"></i> View</a>
+                                            <a class="btn btn-sm btn-primary" href="{% url 'update-order' order.id %}"><i class="bi bi-pen"></i> Edit</a>
+                                        </td>
+                                        </form>
+                                    </tr>
+                                {% endfor %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Table End -->
+        <!-- <div class="row g-4">
             <div class="col-sm-12 col-xl-6">
                 <div class="bg-light rounded h-100 p-4">
                     <h6 class="mb-4">Basic Form</h6>
@@ -289,12 +335,7 @@
                         aria-label=".form-control-sm example">
                 </div>
             </div>
-        </div>
-    </div>
+        </div> -->
+    <!-- </div> -->
     <!-- Form End -->
-    {% if orders %}
-        {% for order in orders %}
-            {{order}}
-        {% endfor %}
-    {% endif %}
 {% endblock %}
